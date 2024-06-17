@@ -2,11 +2,13 @@ package ports
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"time"
+
 	"github.com/valyala/fastjson"
 )
 
@@ -56,12 +58,15 @@ func gravarArquivo(body []byte){
 		panic(err)
 	}
 
-	file, err := os.Create("cotacao.txt")
+	file, err := os.OpenFile("cotacao.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil{
 		panic(err)
 	}
 	defer file.Close()
-	_, err = file.WriteString("Dólar:" + string(v.GetStringBytes("bid")) )
+
+	linha := fmt.Sprintf("Dólar: %v \n", string(v.GetStringBytes("bid")))
+
+	_, err = file.WriteString(linha)
 	if err != nil{
 		panic(err)
 	}
